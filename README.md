@@ -16,8 +16,8 @@ A Python-based weather application that fetches and displays current weather inf
 - requests
 - openmeteo_requests (for test.py)
 - pandas (for test.py)
-- requests_cache (for test.py)
-- retry_requests (for test.py)
+- requests-cache (for test.py)
+- retry-requests (for test.py)
 
 ## Installation
 
@@ -29,7 +29,7 @@ cd WeatherApp
 
 2. Install required packages:
 ```bash
-pip install requests openmeteo_requests pandas requests_cache retry_requests
+pip install requests openmeteo_requests pandas requests-cache retry-requests
 ```
 
 ## Usage
