@@ -100,11 +100,9 @@ def current_weather(latitude, longitude):
     data = response.json()
 
     current = data["current_weather"]
-    print(weather_codes[current["weathercode"]])
+    print(colorama.Fore.LIGHTWHITE_EX + weather_codes[current["weathercode"]])
     print(f"{current['temperature']}°C")
     print(f"{current['windspeed']}km/h with {current['winddirection']}° direction")
-    print(f"Elevation: {data['elevation']}m")
-    print(f"Time of measurement: {current["time"].split('T')[1]}")
 
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
@@ -125,7 +123,7 @@ location_data = response.json()
 loc = location_data["loc"].split(",")
 latitude = loc[0]
 longitude = loc[1]
-print(colorama.Fore.WHITE + "Everything finished. Enjoy!" + colorama.Style.RESET_ALL)
+print(colorama.Fore.WHITE + "Setup finished!" + colorama.Style.RESET_ALL)
 
 while True:
     inp = input(colorama.Fore.LIGHTWHITE_EX + "WTR> " + colorama.Style.RESET_ALL).strip().split()
@@ -135,8 +133,10 @@ while True:
                 days = int(inp[1])
                 if days < 1 or days > 14:
                     raise ValueError
+                print(colorama.Fore.WHITE + "Working..." + colorama.Style.RESET_ALL)
                 forecast(latitude, longitude, days)
             except IndexError:
+                print(colorama.Fore.WHITE + "Working..." + colorama.Style.RESET_ALL)
                 forecast(latitude, longitude)
             except ValueError:
                 print(colorama.Fore.RED + "Days must be an integer between 1 and 14." + colorama.Style.RESET_ALL)
@@ -144,7 +144,6 @@ while True:
             print(colorama.Fore.WHITE + "Exiting..." + colorama.Style.RESET_ALL)
             break
         elif inp[0].lower() in ["current", "c"]:
-            print(colorama.Fore.WHITE + "Working..." + colorama.Style.RESET_ALL)
             current_weather(latitude, longitude)
 
     except IndexError:
