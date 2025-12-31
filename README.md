@@ -29,7 +29,7 @@ cd WeatherApp
 
 2. Install required packages:
 ```bash
-pip install requests openmeteo_requests pandas requests-cache retry-requests
+pip install requests openmeteo_requests pandas requests_cache retry_requests
 ```
 
 ## Usage
