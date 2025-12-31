@@ -1,10 +1,20 @@
-import openmeteo_requests
+import colorama
 
+print(colorama.Fore.LIGHTWHITE_EX + """ █████   ███   █████          ███████████          ███████████  
+░░███   ░███  ░░███          ░█░░░███░░░█         ░░███░░░░░███ 
+ ░███   ░███   ░███   ██████ ░   ░███  ░   ██████  ░███    ░███ 
+ ░███   ░███   ░███  ███░░███    ░███     ███░░███ ░██████████  
+ ░░███  █████  ███  ░███████     ░███    ░███████  ░███░░░░░███ 
+  ░░░█████░█████░   ░███░░░      ░███    ░███░░░   ░███    ░███ 
+    ░░███ ░░███     ░░██████     █████   ░░██████  █████   █████
+     ░░░   ░░░       ░░░░░░     ░░░░░     ░░░░░░  ░░░░░   ░░░░░ """ + colorama.Style.RESET_ALL)
+
+print(colorama.Fore.WHITE + "Loading imports..." + colorama.Style.RESET_ALL)
+import openmeteo_requests
 import pandas as pd
 import requests_cache
 from retry_requests import retry
 import requests
-
 import matplotlib.pyplot as plt
 
 def forecast(latitude, longitude, days=7):
@@ -48,6 +58,7 @@ def forecast(latitude, longitude, days=7):
 
     CreateTemperaturePlot(hourly_dataframe)
 
+print(colorama.Fore.WHITE + "Getting your location from your public IP..." + colorama.Style.RESET_ALL)
 response = requests.get("https://ipinfo.io/json")
 response.raise_for_status()
 location_data = response.json()
@@ -56,7 +67,21 @@ location_data = response.json()
 loc = location_data["loc"].split(",")
 latitude = loc[0]
 longitude = loc[1]
+print(colorama.Fore.WHITE + "Everything finished. Enjoy!" + colorama.Style.RESET_ALL)
 
-print(f"Weather for {location_data['city']}, {location_data['country']}")
+while True:
+    inp = input(colorama.Fore.LIGHTWHITE_EX + "WTR> " + colorama.Style.RESET_ALL).strip().split()
+    try:
+        if inp[0].lower() in ["forecast", "f", "fore"]:
+            try:
+                days = int(inp[1])
+                if days < 1 or days > 14:
+                    raise ValueError
+                forecast(latitude, longitude, days)
+            except IndexError:
+                forecast(latitude, longitude)
+            except ValueError:
+                print(colorama.Fore.RED + "Days must be an integer between 1 and 14." + colorama.Style.RESET_ALL)
 
-forecast(latitude, longitude, days=1)
+    except IndexError:
+        print(colorama.Fore.RED + "Invalid input" + colorama.Style.RESET_ALL)
