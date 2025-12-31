@@ -57,6 +57,52 @@ def forecast(latitude, longitude, days=7):
         plt.show()
 
     CreateTemperaturePlot(hourly_dataframe)
+def air_quality(latitude, longitude, days=7):
+    cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
+    retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
+    openmeteo = openmeteo_requests.Client(session=retry_session)
+
+    url = "https://air-quality-api.open-meteo.com/v1/air-quality"
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "hourly": ["pm10", "pm2_5", "european_aqi_pm10", "european_aqi_pm2_5"],
+        "forecast_days": days
+    }
+    responses = openmeteo.weather_api(url, params=params)
+    response = responses[0]
+
+    hourly = response.Hourly()
+    hourly_pm10 = hourly.Variables(0).ValuesAsNumpy()
+    hourly_pm2_5 = hourly.Variables(1).ValuesAsNumpy()
+    hourly_european_aqi_pm10 = hourly.Variables(2).ValuesAsNumpy()
+    hourly_european_aqi_pm2_5 = hourly.Variables(3).ValuesAsNumpy()
+
+    hourly_data = {"date": pd.date_range(
+        start=pd.to_datetime(hourly.Time(), unit="s", utc=True),
+        end=pd.to_datetime(hourly.TimeEnd(), unit="s", utc=True),
+        freq=pd.Timedelta(seconds=hourly.Interval()),
+        inclusive="left"
+    )}
+    hourly_data["pm10"] = hourly_pm10
+    hourly_data["pm2_5"] = hourly_pm2_5
+    hourly_data["european_aqi_pm10"] = hourly_european_aqi_pm10
+    hourly_data["european_aqi_pm2_5"] = hourly_european_aqi_pm2_5
+
+    hourly_dataframe = pd.DataFrame(data=hourly_data)
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(hourly_dataframe['date'], hourly_dataframe['european_aqi_pm10'], marker='o', label='PM10 AQI')
+    plt.plot(hourly_dataframe['date'], hourly_dataframe['european_aqi_pm2_5'], marker='x', label='PM2.5 AQI')
+    plt.title("Air Quality Index (AQI) Forecast")
+    plt.xlabel('Date and Time')
+    plt.ylabel('European AQI')
+    plt.legend()
+    plt.grid(True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
 def current_weather(latitude, longitude):
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
@@ -145,6 +191,18 @@ while True:
             break
         elif inp[0].lower() in ["current", "c"]:
             current_weather(latitude, longitude)
+        elif inp[0].lower() in ["airquality", "aq", "air"]:
+            try:
+                days = int(inp[1])
+                if days < 1 or days > 14:
+                    raise ValueError
+                print(colorama.Fore.WHITE + "Working..." + colorama.Style.RESET_ALL)
+                air_quality(latitude, longitude, days)
+            except IndexError:
+                print(colorama.Fore.WHITE + "Working..." + colorama.Style.RESET_ALL)
+                air_quality(latitude, longitude)
+            except ValueError:
+                print(colorama.Fore.RED + "Days must be an integer between 1 and 14." + colorama.Style.RESET_ALL)
 
     except IndexError:
         print(colorama.Fore.RED + "Invalid input" + colorama.Style.RESET_ALL)
