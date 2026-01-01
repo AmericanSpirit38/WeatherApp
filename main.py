@@ -102,6 +102,52 @@ def air_quality(latitude, longitude, days=7):
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.show()
+def wave_forecast(latitude, longitude, days=7):
+    cache_session = requests_cache.CachedSession('.cache', expire_after=3600)
+    retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
+    openmeteo = openmeteo_requests.Client(session=retry_session)
+
+    url = "https://marine-api.open-meteo.com/v1/marine"
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "hourly": ["wave_height", "wave_period"],
+        "forecast_days": days
+    }
+    responses = openmeteo.weather_api(url, params=params)
+
+    response = responses[0]
+
+    hourly = response.Hourly()
+    hourly_wave_height = hourly.Variables(0).ValuesAsNumpy()
+    hourly_wave_period = hourly.Variables(1).ValuesAsNumpy()
+
+    hourly_data = {"date": pd.date_range(
+        start=pd.to_datetime(hourly.Time(), unit="s", utc=True),
+        end=pd.to_datetime(hourly.TimeEnd(), unit="s", utc=True),
+        freq=pd.Timedelta(seconds=hourly.Interval()),
+        inclusive="left"
+    )}
+
+    hourly_data["wave_height"] = hourly_wave_height
+    hourly_data["wave_period"] = hourly_wave_period
+
+    hourly_dataframe = pd.DataFrame(data=hourly_data)
+
+    if hourly_dataframe['wave_height'].isna().any() and hourly_dataframe['wave_period'].isna().any():
+        print(colorama.Fore.RED + "No wave data avalible for this location." + colorama.Style.RESET_ALL)
+    else:
+        plt.figure(figsize=(10, 5))
+        plt.plot(hourly_dataframe['date'], hourly_dataframe['wave_height'], marker='o', label='Wave Height (m)')
+        plt.plot(hourly_dataframe['date'], hourly_dataframe['wave_period'], marker='x', label='Wave Period (s)')
+        plt.title(f"{days} day wave forecast")
+        plt.xlabel('Date and Time')
+        plt.ylabel('Values')
+        plt.grid(True)
+        plt.xticks(rotation=45)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
 def current_weather(latitude, longitude):
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
@@ -225,7 +271,17 @@ while True:
             except ValueError:
                 print(colorama.Fore.RED + "Days must be an integer between 1 and 14." + colorama.Style.RESET_ALL)
         elif inp[0].lower() in ["wave", "w"]:
-            print(colorama.Fore.WHITE + "Wave forecast is not implemented yet." + colorama.Style.RESET_ALL)
+            try:
+                days = int(inp[1])
+                if days < 1 or days > 14:
+                    raise ValueError
+                print(colorama.Fore.WHITE + "Working..." + colorama.Style.RESET_ALL)
+                wave_forecast(latitude, longitude, days)
+            except IndexError:
+                print(colorama.Fore.WHITE + "Working..." + colorama.Style.RESET_ALL)
+                wave_forecast(latitude, longitude)
+            except ValueError:
+                print(colorama.Fore.RED + "Days must be an integer between 1 and 14." + colorama.Style.RESET_ALL)
         else:
             print(colorama.Fore.RED + "Unknown command" + colorama.Style.RESET_ALL)
 
