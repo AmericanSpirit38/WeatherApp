@@ -204,8 +204,6 @@ def current_weather(latitude, longitude):
     response = requests.get(url, params=params)
     response.raise_for_status()
     data = response.json()
-
-
 def get_location():
     try:
         print(colorama.Fore.WHITE + "Getting your location from your public IP..." + colorama.Style.RESET_ALL)
@@ -223,7 +221,6 @@ def get_location():
     except Exception as e:
         print(colorama.Fore.RED + f"Error getting location: {e}" + colorama.Style.RESET_ALL)
         print(colorama.Fore.RED + "Please enter your location manually using location <latitude> <longitude>" + colorama.Style.RESET_ALL)
-
 
 latitude, longitude = get_location()
 print(colorama.Fore.WHITE + "Setup finished!" + colorama.Style.RESET_ALL)
@@ -282,6 +279,15 @@ while True:
                 wave_forecast(latitude, longitude)
             except ValueError:
                 print(colorama.Fore.RED + "Days must be an integer between 1 and 14." + colorama.Style.RESET_ALL)
+        elif inp[0].lower() in ["help", "h", "?"]:
+            print(colorama.Fore.LIGHTMAGENTA_EX + "Available commands: \n" +
+                  colorama.Fore.LIGHTWHITE_EX + "forecast <days> (f, fore)" + colorama.Fore.WHITE + "- Show temperature forecast for the next <days> days (default 7, min 1 max 14)" + colorama.Style.RESET_ALL + "\n" +
+                  colorama.Fore.LIGHTWHITE_EX + "airquality <days> (aq, air)" + colorama.Fore.WHITE + "- Show air quality forecast for the next <days> days (default 7, min 7, max 14)" + colorama.Style.RESET_ALL + "\n" +
+                  colorama.Fore.LIGHTWHITE_EX + "wave <days> (w)" + colorama.Fore.WHITE + "- Show wave forecast for the next <days> days (default 7, max 14)" + colorama.Style.RESET_ALL + "\n" +
+                  colorama.Fore.LIGHTWHITE_EX + "current (c)" + colorama.Fore.WHITE + "- Show current weather" + colorama.Style.RESET_ALL + "\n" +
+                  colorama.Fore.LIGHTWHITE_EX + "location <latitude> <longitude> (loc)" + colorama.Fore.WHITE + "- Set your location manually or leave empty to get it from your public IP" + colorama.Style.RESET_ALL + "\n" +
+                  colorama.Fore.LIGHTWHITE_EX + "help (h, ?)" + colorama.Fore.WHITE + "- Show this help message" + colorama.Style.RESET_ALL + "\n" +
+                  colorama.Fore.LIGHTWHITE_EX + "exit (quit, q, e)" + colorama.Fore.WHITE + "- Exit the application" + colorama.Style.RESET_ALL)
         else:
             print(colorama.Fore.RED + "Unknown command" + colorama.Style.RESET_ALL)
 
