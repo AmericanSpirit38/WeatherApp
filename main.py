@@ -205,10 +205,10 @@ while True:
         elif inp[0].lower() in ["location", "loc"]:
             if len(inp) == 3:
                 try:
-                    latitude = inp[1]
-                    longitude = inp[2]
+                    latitude = float(inp[1])
+                    longitude = float(inp[2])
                     print(colorama.Fore.WHITE + f"Location set to {latitude}, {longitude}" + colorama.Style.RESET_ALL)
-                except TypeError:
+                except ValueError:
                     print(colorama.Fore.RED + "Invalid latitude or longitude." + colorama.Style.RESET_ALL)
             else:
                 latitude, longitude = get_location()
