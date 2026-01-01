@@ -220,3 +220,5 @@ while True:
 
     except IndexError:
         print(colorama.Fore.RED + "Invalid input" + colorama.Style.RESET_ALL)
+    except Exception as e:
+        print(colorama.Fore.RED + f"An error occurred: {e}" + colorama.Style.RESET_ALL)
