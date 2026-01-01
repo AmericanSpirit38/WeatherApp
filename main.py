@@ -196,7 +196,15 @@ while True:
         elif inp[0].lower() in ["current", "c"]:
             current_weather(latitude, longitude)
         elif inp[0].lower() in ["location", "loc"]:
-            latitude, longitude = get_location()
+            if len(inp) == 3:
+                try:
+                    latitude = inp[1]
+                    longitude = inp[2]
+                    print(colorama.Fore.WHITE + f"Location set to {latitude}, {longitude}" + colorama.Style.RESET_ALL)
+                except TypeError:
+                    print(colorama.Fore.RED + "Invalid latitude or longitude." + colorama.Style.RESET_ALL)
+            else:
+                latitude, longitude = get_location()
         elif inp[0].lower() in ["airquality", "aq", "air"]:
             try:
                 days = int(inp[1])
