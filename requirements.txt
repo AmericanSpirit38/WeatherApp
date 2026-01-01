@@ -1,0 +1,6 @@
+colorama
+openmeteo-requests
+pandas
+requests-cache
+retry-requests
+matplotlib
