@@ -12,13 +12,21 @@ WeatherApp is a small interactive CLI that fetches forecasts, air quality, wave 
 
 ### Quick install (recommended)
 
-1. Make the script executable (first run only):
+1. Clone the repo:
    ```bash
-   chmod +x install.sh
+   git clone https://github.com/AmericanSpirit38/WeatherApp
    ```
-2. Run the installer:
+2. Change your directory to the repo:
+   ```bash
+   cd WeatherApp
+   ```
+3. Run the installer:
    ```bash
    ./install.sh
+   ```
+   If it fails use to make the script executable:
+   ```bash
+   chmod +x install.sh
    ```
 
 The script creates a virtual environment in `.venv`, upgrades `pip`, and installs all required dependencies:
@@ -73,13 +81,3 @@ All commands are case-insensitive; aliases are shown in parentheses.
 - API responses are cached for one hour in `.cache.sqlite`, the SQLite database `requests-cache` creates when configured with the `.cache` cache name.
 - Matplotlib opens a window for plots; ensure you are running in an environment that supports GUI windows or use a backend that fits your setup.
 - Keep `days` between 1 and 14; the app will reject values outside that range.
-
-## Development and testing
-
-There are currently no automated tests. For a quick syntax check you can run:
-
-```bash
-python -m compileall main.py
-```
-
-When updating code, prefer running the app interactively to verify commands still behave as documented above.
