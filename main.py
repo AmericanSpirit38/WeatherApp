@@ -48,7 +48,7 @@ def forecast(latitude, longitude, days=7):
     def CreateTemperaturePlot(dataframe: pd.DataFrame):
         plt.figure(figsize=(10, 5))
         plt.plot(dataframe['date'], dataframe['temperature_2m'], marker='o')
-        plt.title(f"{days} day forecast")
+        plt.title(f"{days} day temperature forecast")
         plt.xlabel('Date and Time')
         plt.ylabel('Temperature (°C)')
         plt.grid(True)
@@ -94,7 +94,7 @@ def air_quality(latitude, longitude, days=7):
     plt.figure(figsize=(10, 5))
     plt.plot(hourly_dataframe['date'], hourly_dataframe['european_aqi_pm10'], marker='o', label='PM10 AQI')
     plt.plot(hourly_dataframe['date'], hourly_dataframe['european_aqi_pm2_5'], marker='x', label='PM2.5 AQI')
-    plt.title("Air Quality Index (AQI) Forecast")
+    plt.title(f"{days} day AQI Forecast")
     plt.xlabel('Date and Time')
     plt.ylabel('European AQI')
     plt.legend()
@@ -102,7 +102,6 @@ def air_quality(latitude, longitude, days=7):
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.show()
-
 def current_weather(latitude, longitude):
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
@@ -160,15 +159,20 @@ def current_weather(latitude, longitude):
     response.raise_for_status()
     data = response.json()
 
-print(colorama.Fore.WHITE + "Getting your location from your public IP..." + colorama.Style.RESET_ALL)
-response = requests.get("https://ipinfo.io/json")
-response.raise_for_status()
-location_data = response.json()
 
+def get_location():
+    global latitude, longitude
+    print(colorama.Fore.WHITE + "Getting your location from your public IP..." + colorama.Style.RESET_ALL)
+    response = requests.get("https://ipinfo.io/json")
+    response.raise_for_status()
+    location_data = response.json()
 
-loc = location_data["loc"].split(",")
-latitude = loc[0]
-longitude = loc[1]
+    loc = location_data["loc"].split(",")
+    latitude = loc[0]
+    longitude = loc[1]
+    return latitude, longitude
+
+latitude, longitude = get_location()
 print(colorama.Fore.WHITE + "Setup finished!" + colorama.Style.RESET_ALL)
 
 while True:
@@ -191,6 +195,8 @@ while True:
             break
         elif inp[0].lower() in ["current", "c"]:
             current_weather(latitude, longitude)
+        elif inp[0].lower() in ["location", "loc"]:
+            latitude, longitude = get_location()
         elif inp[0].lower() in ["airquality", "aq", "air"]:
             try:
                 days = int(inp[1])
