@@ -161,16 +161,23 @@ def current_weather(latitude, longitude):
 
 
 def get_location():
-    global latitude, longitude
-    print(colorama.Fore.WHITE + "Getting your location from your public IP..." + colorama.Style.RESET_ALL)
-    response = requests.get("https://ipinfo.io/json")
-    response.raise_for_status()
-    location_data = response.json()
+    try:
+        print(colorama.Fore.WHITE + "Getting your location from your public IP..." + colorama.Style.RESET_ALL)
+        response = requests.get("https://ipinfo.io/json")
+        response.raise_for_status()
+        location_data = response.json()
 
-    loc = location_data["loc"].split(",")
-    latitude = loc[0]
-    longitude = loc[1]
-    return latitude, longitude
+        loc = location_data["loc"].split(",")
+        lat = loc[0]
+        long = loc[1]
+        return lat, long
+    except requests.exceptions.RequestException as e:
+        print(colorama.Fore.RED + f"Network error getting location: {e}" + colorama.Style.RESET_ALL)
+        print(colorama.Fore.RED + "Please enter your location manually using location <latitude> <longitude>" + colorama.Style.RESET_ALL)
+    except Exception as e:
+        print(colorama.Fore.RED + f"Error getting location: {e}" + colorama.Style.RESET_ALL)
+        print(colorama.Fore.RED + "Please enter your location manually using location <latitude> <longitude>" + colorama.Style.RESET_ALL)
+
 
 latitude, longitude = get_location()
 print(colorama.Fore.WHITE + "Setup finished!" + colorama.Style.RESET_ALL)
