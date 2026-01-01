@@ -224,6 +224,10 @@ while True:
                 air_quality(latitude, longitude)
             except ValueError:
                 print(colorama.Fore.RED + "Days must be an integer between 1 and 14." + colorama.Style.RESET_ALL)
+        elif inp[0].lower() in ["wave", "w"]:
+            print(colorama.Fore.WHITE + "Wave forecast is not implemented yet." + colorama.Style.RESET_ALL)
+        else:
+            print(colorama.Fore.RED + "Unknown command" + colorama.Style.RESET_ALL)
 
     except IndexError:
         print(colorama.Fore.RED + "Invalid input" + colorama.Style.RESET_ALL)
